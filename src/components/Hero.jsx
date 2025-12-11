@@ -3,13 +3,15 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/all";
+import { useMediaQuery } from "react-responsive";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
   const heroRef = useRef(null);
   const titleText = "MOJITO";
-
+  const videoRef = useRef();
+  const isMobile = useMediaQuery({ maxWidth: 767 });
   useGSAP(
     () => {
       console.log("[Hero] useGSAP effect running");
@@ -64,6 +66,22 @@ const Hero = () => {
         })
         .to(".left-leaf", { y: 200 }, 0)
         .to(".right-leaf", { y: -200 }, 0);
+      const startValue = isMobile ? "top 50%" : "center 60%"; //when the top of the video hits 50% from top of viewport on mobile the animation starts and center hits 60% on desktop
+      const endValue = isMobile ? "120% top" : "bottom top"; //when the top of the video goes 120% past the top of viewport on mobile the animation ends and bottom hits top on desktop
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: videoRef.current,
+          start: startValue,
+          end: endValue,
+          scrub: true,
+          pin: true,
+        },
+      });
+      videoRef.current.onloadedmetadata = () => {
+        tl.to(videoRef.current, {
+          currentTime: videoRef.current.duration,
+        });
+      };
 
       return () => {
         console.log("[Hero] cleanup running");
@@ -74,45 +92,57 @@ const Hero = () => {
   );
 
   return (
-    <section id="hero" className="noisy" ref={heroRef}>
-      <h1 className="title">
-        {titleText.split("").map((ch, i) => (
-          <span key={i} className="title-char inline-block text-gradient">
-            {ch}
-          </span>
-        ))}
-      </h1>
+    <>
+      {" "}
+      <section id="hero" className="noisy" ref={heroRef}>
+        <h1 className="title">
+          {titleText.split("").map((ch, i) => (
+            <span key={i} className="title-char inline-block text-gradient">
+              {ch}
+            </span>
+          ))}
+        </h1>
 
-      <img
-        src="/images/hero-left-leaf.png"
-        alt="left-leaf"
-        className="left-leaf"
-      />
-      <img
-        src="/images/hero-right-leaf.png"
-        alt="right-leaf"
-        className="right-leaf"
-      />
+        <img
+          src="/images/hero-left-leaf.png"
+          alt="left-leaf"
+          className="left-leaf"
+        />
+        <img
+          src="/images/hero-right-leaf.png"
+          alt="right-leaf"
+          className="right-leaf"
+        />
 
-      <div className="body">
-        <div className="content">
-          <div className="space-y-5 hidden md:block">
-            <p>Cool. Crisp. Classic.</p>
-            <p className="subtitle">
-              Sip the Spirit <br /> of Summer
-            </p>
-          </div>
-          <div className="view-cocktails">
-            <p className="subtitle">
-              Every cocktail on our menu is a blend of premium ingredients,
-              creative flair, and timeless recipes — designed to delight your
-              senses.
-            </p>
-            <a href="#cocktails">View Cocktails</a>
+        <div className="body">
+          <div className="content">
+            <div className="space-y-5 hidden md:block">
+              <p>Cool. Crisp. Classic.</p>
+              <p className="subtitle">
+                Sip the Spirit <br /> of Summer
+              </p>
+            </div>
+            <div className="view-cocktails">
+              <p className="subtitle">
+                Every cocktail on our menu is a blend of premium ingredients,
+                creative flair, and timeless recipes — designed to delight your
+                senses.
+              </p>
+              <a href="#cocktails">View Cocktails</a>
+            </div>
           </div>
         </div>
+      </section>
+      <div className="video absolute inset-0">
+        <video
+          ref={videoRef}
+          src="/videos/output.mp4"
+          muted
+          playsInline
+          preload="auto"
+        />
       </div>
-    </section>
+    </>
   );
 };
 
