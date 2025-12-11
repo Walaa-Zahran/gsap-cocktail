@@ -8,13 +8,15 @@ const Navbar = () => {
       scrollTrigger: {
         trigger: "nav",
         start: "bottom top", // when the bottom of the nav hits the top of the viewport
+        end: "bottom top+=100", // when the bottom of the nav is 100px past the top of the viewport
+        scrub: true,
       },
     });
     navTween.fromTo(
       "nav",
       { backgroundColor: "transparent" },
       {
-        backgroundColor: "#000000ff",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
         backgroundFilter: "blur(10px)",
         duration: 1,
         ease: "power1.inOut",
