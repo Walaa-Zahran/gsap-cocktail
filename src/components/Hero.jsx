@@ -1,50 +1,85 @@
+import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import SplitText from "gsap-trial/SplitText";
+import ScrollTrigger from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(SplitText, useGSAP);
+gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
-  useGSAP(() => {
-    const heroSplit = new SplitText(".title", {
-      type: "chars,words",
-    });
-    const paragraphSplit = new SplitText(".subtitle", {
-      type: "lines",
-    });
-    heroSplit.chars.forEach((char) => {
-      char.classList.add("text-gradient");
-    });
-    gsap.from(heroSplit.chars, {
-      yPercent: 100,
-      duration: 1.8,
-      ease: "expo.out",
-      stagger: 0.06, //the quickly one after another
-    });
-    gsap.from(paragraphSplit.lines, {
-      opacity: 0,
-      yPercent: 100,
-      duration: 1.8,
-      ease: "expo.out",
-      stagger: 0.06,
-      delay: 1,
-    });
-    gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: "#hero",
-          start: "top top", // when the top of the hero hits the top of the viewport
-          end: "bottom top", // when the bottom of the hero hits the top of the viewport
-          scrub: true,
-        },
-      })
-      .to(".left-leaf", { y: 200 }, 0)
-      .to(".right-leaf", { y: -200 }, 0);
-  }, []);
+  const heroRef = useRef(null);
+  const titleText = "MOJITO";
+
+  useGSAP(
+    () => {
+      console.log("[Hero] useGSAP effect running");
+
+      const root = heroRef.current;
+      if (!root) return;
+
+      // All char spans in the title
+      const chars = root.querySelectorAll(".title-char");
+      const subtitles = root.querySelectorAll(".subtitle");
+
+      console.log("[Hero] chars count:", chars.length);
+      console.log("[Hero] subtitles count:", subtitles.length);
+
+      // Animate characters
+      gsap.from(chars, {
+        yPercent: 100,
+        duration: 1.8,
+        ease: "expo.out",
+        stagger: 0.06,
+        onStart: () => console.log("[Hero] chars animation starting"),
+        onComplete: () => console.log("[Hero] chars animation complete"),
+      });
+
+      // Animate subtitles (whole elements instead of lines)
+      gsap.from(subtitles, {
+        opacity: 0,
+        yPercent: 100,
+        duration: 1.8,
+        ease: "expo.out",
+        stagger: 0.2,
+        delay: 1,
+        onStart: () =>
+          console.log("[Hero] subtitle elements animation starting"),
+        onComplete: () =>
+          console.log("[Hero] subtitle elements animation complete"),
+      });
+
+      // Scroll-based leaf animation
+      const scrollTl = gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: root,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+            onEnter: () => console.log("[Hero] scrollTrigger entered"),
+            onLeave: () => console.log("[Hero] scrollTrigger left"),
+          },
+        })
+        .to(".left-leaf", { y: 200 }, 0)
+        .to(".right-leaf", { y: -200 }, 0);
+
+      return () => {
+        console.log("[Hero] cleanup running");
+        scrollTl.kill();
+      };
+    },
+    { scope: heroRef }
+  );
 
   return (
-    <section id="hero" className="noisy">
-      <h1 className="title">MOJITO</h1>
+    <section id="hero" className="noisy" ref={heroRef}>
+      <h1 className="title">
+        {titleText.split("").map((ch, i) => (
+          <span key={i} className="title-char inline-block text-gradient">
+            {ch}
+          </span>
+        ))}
+      </h1>
+
       <img
         src="/images/hero-left-leaf.png"
         alt="left-leaf"
@@ -55,6 +90,7 @@ const Hero = () => {
         alt="right-leaf"
         className="right-leaf"
       />
+
       <div className="body">
         <div className="content">
           <div className="space-y-5 hidden md:block">
