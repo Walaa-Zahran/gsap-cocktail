@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/all";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,10 +19,12 @@ const Hero = () => {
 
       // All char spans in the title
       const chars = root.querySelectorAll(".title-char");
-      const subtitles = root.querySelectorAll(".subtitle");
+      const paragraphSplit = new SplitText(".subtitle", {
+        type: "lines",
+      });
 
       console.log("[Hero] chars count:", chars.length);
-      console.log("[Hero] subtitles count:", subtitles.length);
+      console.log("[Hero] lines count:", paragraphSplit.lines.length);
 
       // Animate characters
       gsap.from(chars, {
@@ -34,7 +37,7 @@ const Hero = () => {
       });
 
       // Animate subtitles (whole elements instead of lines)
-      gsap.from(subtitles, {
+      gsap.from(paragraphSplit.lines, {
         opacity: 0,
         yPercent: 100,
         duration: 1.8,
