@@ -88,12 +88,12 @@ const Hero = () => {
         scrollTl.kill();
       };
     },
-    { scope: heroRef }
+    { scope: heroRef },
+    []
   );
 
   return (
     <>
-      {" "}
       <section id="hero" className="noisy" ref={heroRef}>
         <h1 className="title">
           {titleText.split("").map((ch, i) => (

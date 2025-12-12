@@ -14,7 +14,7 @@ const Cocktails = () => {
     });
     parallaxTimeLine.from("#c-left-leaf", { x: -100, y: 100 });
     parallaxTimeLine.from("#c-right-leaf", { x: 100, y: 100 });
-  }, []);
+  });
   return (
     <section id="cocktails" className="noisy">
       <img
