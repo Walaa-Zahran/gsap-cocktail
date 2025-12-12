@@ -85,9 +85,8 @@ body {
   }
 
   .noisy {
-    @apply absolute inset-0 size-full bg-[url("/images/noise.png")]  h-[100vh] w-full overflow-hidden pointer-events-none;
+    @apply absolute inset-0 size-full bg-[url("/images/noise.png")];
   }
-
   #hero {
     @apply relative z-10 min-h-dvh w-full border border-transparent;
 
